@@ -1,5 +1,8 @@
 const vscode = require('vscode')
 const PACKAGE_NAME = 'problems-fix-runner'
+
+const nextEvent = new vscode.EventEmitter()
+const stopEvent = new vscode.EventEmitter()
 let config = {}
 let outputChannel
 
@@ -21,15 +24,39 @@ async function activate(context) {
         }
     })
 
-    let stop = true
+    // on window change
+    vscode.window.onDidChangeWindowState(async (e) => {
+        if (!e.focused) {
+            stopEvent.fire()
+        }
+    })
 
+    // go to next
+    context.subscriptions.push(
+        vscode.commands.registerCommand('pfr.next', async () => {
+            await runCmnd('hideSuggestWidget')
+            nextEvent.fire()
+        })
+    )
+
+    let running = false
+
+    // loop over
     context.subscriptions.push(
         vscode.commands.registerCommand('pfr', async () => {
+            await setWhen(true)
+
+            // in case of double running the cmnd
+            if (running) {
+                return stopEvent.fire()
+            }
+
+            // clear old output
             if (outputChannel) {
                 outputChannel.clear()
             }
 
-            stop = false
+            running = true
             let editor = vscode.window.activeTextEditor
             let { document: aDocument } = editor
             let diagnostics = sortSelections(
@@ -55,28 +82,49 @@ async function activate(context) {
                 }
             }
 
+            // quick fix
             for (let i = 0; i < diagnostics.length; i++) {
+                // stop loop
+                stopEvent.event((e) => {
+                    if (running) {
+                        running = false
+                        setWhen(false)
+                        showMsg('Runner Stopped')
+                    }
+                })
+
+                if (!running) {
+                    break
+                }
+
                 const info = diagnostics[i]
                 let { range: iRange } = info
 
-                editor.selection = new vscode.Selection(iRange.end, iRange.end)
+                editor.selection = await new vscode.Selection(iRange.end, iRange.end)
                 await runCmnd('editor.action.quickFix')
-
                 await new Promise((resolve) => {
-                    let timer
-
-                    // TODO
-                    // if no selection made, hide suggestion menu and go to next
-                    timer = setTimeout(() => {
+                    // if no selection made, go next
+                    let timer = setTimeout(() => {
                         runCmnd('hideSuggestWidget')
-                        // resolve()
+                        resolve()
                     }, config.waitFor * 1000)
 
+                    // force go next
+                    nextEvent.event((e) => {
+                        clearTimeout(timer)
+                        resolve()
+                    })
+
+                    // go next
                     vscode.workspace.onDidChangeTextDocument((e) => {
-                        if (!stop && e) {
+                        if (running && e) {
                             let { document, contentChanges } = e
 
-                            if (document == aDocument && contentChanges.length && contentChanges[0].range.isEqual(iRange)) {
+                            if (
+                                document == aDocument &&
+                                contentChanges.length &&
+                                contentChanges[0].range.isEqual(iRange)
+                            ) {
                                 clearTimeout(timer)
                                 resolve()
                             }
@@ -85,9 +133,12 @@ async function activate(context) {
                 })
             }
 
-            stop = true
-
-            return showMsg('All Done')
+            // reached the list end
+            if (running) {
+                running = false
+                showMsg('All Done')
+                setWhen(false)
+            }
         })
     )
 }
@@ -120,6 +171,10 @@ async function runCmnd(key) {
     return vscode.commands.executeCommand(key)
 }
 
+async function setWhen(val) {
+    return vscode.commands.executeCommand('setContext', 'pfrIsRunning', val)
+}
+
 function sortSelections(arr) {
     return arr.sort((a, b) => { // make sure its sorted correctly
         if (a.range.start.line > b.range.start.line) return 1
@@ -135,7 +190,10 @@ function showMsg(msg) {
 
 exports.activate = activate
 
-function deactivate() { }
+function deactivate() {
+    nextEvent.dispose()
+    stopEvent.dispose()
+}
 
 module.exports = {
     activate,

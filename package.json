@@ -2,7 +2,7 @@
     "name": "problems-fix-runner",
     "displayName": "Problems Fix Runner",
     "description": "loop over problems in document by source and show quick fix options",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "publisher": "ctf0",
     "repository": "https://github.com/ctf0/vscode-problems-fix-runner",
     "engines": {
@@ -20,13 +20,29 @@
             {
                 "command": "pfr",
                 "title": "Problems Fix Runner"
+            },
+            {
+                "command": "pfr.next",
+                "title": "Problems Fix Runner: next"
+            }
+        ],
+        "keybindings": [
+            {
+                "command": "pfr.next",
+                "key": "tab",
+                "mac": "tab",
+                "when": "pfrIsRunning || quickFixWidgetVisible"
             }
         ],
         "menus": {
             "commandPalette": [
                 {
                     "command": "pfr",
-                    "when": "editorFocus && !editorReadonly"
+                    "when": "editorIsOpen && !editorReadonly"
+                },
+                {
+                    "command": "pfr.next",
+                    "when": "false"
                 }
             ]
         },
