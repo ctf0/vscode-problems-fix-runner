@@ -1,0 +1,74 @@
+{
+    "name": "problems-fix-runner",
+    "displayName": "Problems Fix Runner",
+    "description": "loop over problems in document by source and show quick fix options",
+    "version": "0.0.1",
+    "publisher": "ctf0",
+    "repository": "https://github.com/ctf0/vscode-problems-fix-runner",
+    "engines": {
+        "vscode": "^1.41.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "*"
+    ],
+    "main": "./extension.js",
+    "contributes": {
+        "commands": [
+            {
+                "command": "pfr",
+                "title": "Problems Fix Runner"
+            }
+        ],
+        "menus": {
+            "commandPalette": [
+                {
+                    "command": "pfr",
+                    "when": "editorFocus && !editorReadonly"
+                }
+            ]
+        },
+        "configuration": {
+            "title": "Problems Fix Runner",
+            "type": "object",
+            "properties": {
+                "problems-fix-runner.list": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "default": [
+                        "cSpell"
+                    ],
+                    "description": "listen to problems from this extensions only"
+                },
+                "problems-fix-runner.debug": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "list all problems information in current document to output panel"
+                },
+                "problems-fix-runner.waitFor": {
+                    "type": "number",
+                    "default": 3,
+                    "description": "time in seconds b4 going to next problem if no suggestion was made"
+                }
+            }
+        }
+    },
+    "scripts": {
+        "test": "node ./test/runTest.js"
+    },
+    "devDependencies": {
+        "@types/glob": "^7.1.1",
+        "@types/mocha": "^5.2.7",
+        "@types/node": "^12.11.7",
+        "@types/vscode": "^1.41.0",
+        "eslint": "^6.6.0",
+        "glob": "^7.1.5",
+        "mocha": "^6.2.2",
+        "typescript": "^3.6.4",
+        "vscode-test": "^1.2.2"
+    }
+}
