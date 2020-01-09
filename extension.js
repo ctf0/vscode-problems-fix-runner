@@ -101,11 +101,12 @@ async function activate(context) {
                 let { range: iRange } = info
 
                 editor.selection = await new vscode.Selection(iRange.end, iRange.end)
+                await runCmnd('hideSuggestWidget')
                 await runCmnd('editor.action.quickFix')
                 await new Promise((resolve) => {
                     // if no selection made, go next
                     let timer = setTimeout(() => {
-                        runCmnd('hideSuggestWidget')
+                        stopEvent.fire() // FIXME: because we don't know how to hide the context menu :(
                         resolve()
                     }, config.waitFor * 1000)
 

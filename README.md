@@ -10,7 +10,10 @@ no more no less 💥
 ## Notes
 
 - for severity code meaning check https://code.visualstudio.com/api/references/vscode-api#DiagnosticSeverity
+- runner will stop
+    - if window loses focus
+    - if no selection was made
 
 ## TODO
 
-- hide suggestion menu if no interaction made or cancled & go to next
+- hide suggestion menu if no interaction made or cancled & go to next "if anyone knows how to, plz open a ticket"
