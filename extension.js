@@ -159,6 +159,7 @@ function resetOutputChannel() {
 
     if (config.debug) {
         outputChannel = vscode.window.createOutputChannel("Problems Fix Runner")
+        outputChannel.show()
     }
 }
 

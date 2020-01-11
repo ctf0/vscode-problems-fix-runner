@@ -67,7 +67,7 @@
                 },
                 "problems-fix-runner.waitFor": {
                     "type": "number",
-                    "default": 3,
+                    "default": 5,
                     "description": "time in seconds b4 going to next problem if no suggestion was made"
                 }
             }

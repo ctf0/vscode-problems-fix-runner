@@ -13,6 +13,7 @@ no more no less 💥
 - runner will stop
     - if window loses focus
     - if no selection was made
+    - if command re-executed
 
 ## TODO
 
