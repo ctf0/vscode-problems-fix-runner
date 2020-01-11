@@ -7,6 +7,8 @@ no more, now all u have to do is
 
 no more no less 💥
 
+![demo](https://user-images.githubusercontent.com/7388088/72210739-cf0c1300-34c8-11ea-8239-1650ebdc1ec8.gif)
+
 ## Notes
 
 - for severity code meaning check https://code.visualstudio.com/api/references/vscode-api#DiagnosticSeverity
