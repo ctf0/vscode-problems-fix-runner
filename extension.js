@@ -59,27 +59,33 @@ async function activate(context) {
             running = true
             let editor = vscode.window.activeTextEditor
             let { document: aDocument } = editor
-            let diagnostics = sortSelections(
-                vscode.languages.getDiagnostics(aDocument.uri).filter((e) => {
-                    return config.list.includes(e.source)
+            let diagnostics = vscode.languages.getDiagnostics(aDocument.uri)
+
+            // debug
+            if (config.debug) {
+                for (const info of diagnostics) {
+                    let { severity, source, message, code } = info
+
+                    showDebugMsg(`source: ${source}`)
+                    showDebugMsg(`code: ${code}`)
+                    showDebugMsg(`message: ${message}`)
+                    showDebugMsg(`severity: ${severity}`)
+                    showDebugMsg('--------------------')
+                }
+            }
+
+            diagnostics = sortSelections(
+                diagnostics.filter((e) => {
+                    return config.list.includes(e.source || e.code)
                 })
             )
 
             // nothing found
             if (!diagnostics.length) {
+                running = false
+                await setWhen(false)
+
                 return showMsg('Nothing Found')
-            }
-
-            // debug
-            if (config.debug) {
-                for (const info of diagnostics) {
-                    let { severity, source, message } = info
-
-                    showDebugMsg(`source: ${source}`)
-                    showDebugMsg(`message: ${message}`)
-                    showDebugMsg(`severity: ${severity}`)
-                    showDebugMsg('--------------------')
-                }
             }
 
             // quick fix
