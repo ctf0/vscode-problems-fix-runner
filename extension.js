@@ -53,6 +53,7 @@ async function activate(context) {
 
             // clear old output
             if (outputChannel) {
+                outputChannel.show(true)
                 outputChannel.clear()
             }
 
@@ -165,7 +166,6 @@ function resetOutputChannel() {
 
     if (config.debug) {
         outputChannel = vscode.window.createOutputChannel("Problems Fix Runner")
-        outputChannel.show()
     }
 }
 
