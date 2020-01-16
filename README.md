@@ -14,9 +14,5 @@ no more no less 💥
 - for severity code meaning check https://code.visualstudio.com/api/references/vscode-api#DiagnosticSeverity
 - runner will stop
     - if window loses focus
-    - if no selection was made
+    - if no selection was made (if `menuListType == quickfix`)
     - if command re-executed
-
-## TODO
-
-- hide suggestion menu if no interaction made or cancled & go to next "if anyone knows how to, plz open a ticket"

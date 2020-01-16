@@ -2,7 +2,7 @@
     "name": "problems-fix-runner",
     "displayName": "Problems Fix Runner",
     "description": "loop over problems in document by source and show quick fix options",
-    "version": "0.0.6",
+    "version": "0.0.8",
     "publisher": "ctf0",
     "repository": "https://github.com/ctf0/vscode-problems-fix-runner",
     "engines": {
@@ -14,7 +14,7 @@
     "activationEvents": [
         "*"
     ],
-    "main": "./extension.js",
+    "main": "./src/extension.js",
     "contributes": {
         "commands": [
             {
@@ -24,14 +24,24 @@
             {
                 "command": "pfr.next",
                 "title": "Problems Fix Runner: next"
+            },
+            {
+                "command": "pfr.lineProblem",
+                "title": "Problems Fix Runner: smart goto problem"
             }
         ],
         "keybindings": [
             {
                 "command": "pfr.next",
-                "key": "tab",
-                "mac": "tab",
-                "when": "pfrIsRunning || quickFixWidgetVisible"
+                "key": "escape",
+                "mac": "escape",
+                "when": "pfrIsRunning"
+            },
+            {
+                "command": "pfr.lineProblem",
+                "key": "ctrl+.",
+                "mac": "cmd+.",
+                "when": "editorIsOpen && !editorReadonly"
             }
         ],
         "menus": {
@@ -43,6 +53,10 @@
                 {
                     "command": "pfr.next",
                     "when": "false"
+                },
+                {
+                    "command": "pfr.lineProblem",
+                    "when": "editorIsOpen && !editorReadonly"
                 }
             ]
         },
@@ -60,6 +74,29 @@
                     ],
                     "description": "listen to problems from this extensions only"
                 },
+                "problems-fix-runner.menuListType": {
+                    "type": "string",
+                    "default": "suggestion",
+                    "enum": [
+                        "quickfix",
+                        "suggestion"
+                    ],
+                    "description": "fix suggestion list type",
+                    "enumDescriptions": [
+                        "show quickfix context menu",
+                        "show suggestion menu"
+                    ]
+                },
+                "problems-fix-runner.exclude": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "default": [
+                        "^Add.*(user|folder) dictionary$"
+                    ],
+                    "description": "exclude items from suggestion menu list"
+                },
                 "problems-fix-runner.debug": {
                     "type": "boolean",
                     "default": false,
@@ -67,8 +104,8 @@
                 },
                 "problems-fix-runner.waitFor": {
                     "type": "number",
-                    "default": 5,
-                    "description": "time in seconds b4 going to next problem if no suggestion was made"
+                    "default": 10,
+                    "description": "time in seconds b4 stop or going to next problem if no suggestion was made"
                 }
             }
         }
@@ -86,5 +123,8 @@
         "mocha": "^6.2.2",
         "typescript": "^3.6.4",
         "vscode-test": "^1.2.2"
+    },
+    "dependencies": {
+        "lodash.debounce": "^4.0.8"
     }
 }
