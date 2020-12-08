@@ -9,11 +9,11 @@
 - stop loop on window focus lose
 - stop loop when re-running the command while the prev didnt finish
 
-# 0.0.7
+## 0.0.7
 
 - add keybinding to automatically go to problem on active line
 
-# 0.0.8
+## 0.0.8
 
 - based on [#88628](https://github.com/microsoft/vscode/issues/88628) u can now chose to show the suggestion list as
     1. quickfix :
@@ -27,3 +27,7 @@
         + cons:
             + any selected item will replace the text "no available api to disable that"
             + list would be filled with other suggestions too "no available api to get around that"
+
+## 0.0.9
+
+- fix package settings name

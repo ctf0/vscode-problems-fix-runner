@@ -2,11 +2,11 @@
     "name": "problems-fix-runner",
     "displayName": "Problems Fix Runner",
     "description": "loop over problems in document by source and show quick fix options",
-    "version": "0.0.8",
+    "version": "0.0.9",
     "publisher": "ctf0",
     "repository": "https://github.com/ctf0/vscode-problems-fix-runner",
     "engines": {
-        "vscode": "^1.41.0"
+        "vscode": "^1.51.0"
     },
     "categories": [
         "Other"
@@ -64,7 +64,7 @@
             "title": "Problems Fix Runner",
             "type": "object",
             "properties": {
-                "problems-fix-runner.list": {
+                "problemsFixRunner.list": {
                     "type": "array",
                     "items": {
                         "type": "string"
@@ -74,7 +74,7 @@
                     ],
                     "description": "listen to problems from this extensions only"
                 },
-                "problems-fix-runner.menuListType": {
+                "problemsFixRunner.menuListType": {
                     "type": "string",
                     "default": "suggestion",
                     "enum": [
@@ -87,7 +87,7 @@
                         "show suggestion menu"
                     ]
                 },
-                "problems-fix-runner.exclude": {
+                "problemsFixRunner.exclude": {
                     "type": "array",
                     "items": {
                         "type": "string"
@@ -97,32 +97,29 @@
                     ],
                     "description": "exclude items from suggestion menu list"
                 },
-                "problems-fix-runner.debug": {
+                "problemsFixRunner.debug": {
                     "type": "boolean",
                     "default": false,
                     "description": "list all problems information in current document to output panel"
                 },
-                "problems-fix-runner.waitFor": {
+                "problemsFixRunner.waitFor": {
                     "type": "number",
                     "default": 10,
-                    "description": "time in seconds b4 stop or going to next problem if no suggestion was made"
+                    "markdownDescription": "time in seconds b4 stop (`#problemsFixRunner.menuListType#` == `quickfix`) or going to next problem (`#problemsFixRunner.menuListType#` == `suggestion`) if no suggestion was made"
                 }
             }
         }
     },
-    "scripts": {
-        "test": "node ./test/runTest.js"
-    },
     "devDependencies": {
-        "@types/glob": "^7.1.1",
-        "@types/mocha": "^5.2.7",
-        "@types/node": "^12.11.7",
-        "@types/vscode": "^1.41.0",
-        "eslint": "^6.6.0",
-        "glob": "^7.1.5",
-        "mocha": "^6.2.2",
-        "typescript": "^3.6.4",
-        "vscode-test": "^1.2.2"
+        "@types/glob": "^7.1.3",
+        "@types/mocha": "^8.0.4",
+        "@types/node": "^14.14.10",
+        "@types/vscode": "^1.51.0",
+        "eslint": "^7.15.0",
+        "glob": "^7.1.6",
+        "mocha": "^8.2.1",
+        "typescript": "^4.1.2",
+        "vscode-test": "^1.4.1"
     },
     "dependencies": {
         "lodash.debounce": "^4.0.8"

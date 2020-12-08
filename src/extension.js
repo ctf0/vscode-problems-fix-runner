@@ -1,7 +1,7 @@
 const vscode = require('vscode')
-const PACKAGE_NAME = 'problems-fix-runner'
+const PACKAGE_NAME = 'problemsFixRunner'
 const debounce = require('lodash.debounce')
-const { registerProviders } = require('./cl')
+const {registerProviders} = require('./cl')
 
 const nextEvent = new vscode.EventEmitter()
 const stopEvent = new vscode.EventEmitter()
@@ -58,13 +58,13 @@ async function doStuff(e) {
 
     running = true
     let editor = vscode.window.activeTextEditor
-    let { document: aDocument } = editor
+    let {document: aDocument} = editor
     let diagnostics = vscode.languages.getDiagnostics(aDocument.uri)
 
     // debug
     if (config.debug) {
         for (const info of diagnostics) {
-            let { severity, source, message, code } = info
+            let {severity, source, message, code} = info
 
             showDebugMsg(`source: ${source}`)
             showDebugMsg(`code: ${code}`)
@@ -101,7 +101,7 @@ async function doStuff(e) {
         }
 
         const info = diagnostics[i]
-        let { range, source, code } = info
+        let {range, source, code} = info
         editor.selection = await new vscode.Selection(range.start, range.start)
 
         if (isASuggestionList) {
@@ -145,7 +145,7 @@ async function doStuff(e) {
                 vscode.workspace.onDidChangeTextDocument(
                     debounce((e) => {
                         if (running && e) {
-                            let { document, contentChanges } = e
+                            let {document, contentChanges} = e
 
                             if (document == aDocument && contentChanges.length) {
                                 cleanUp()
@@ -167,8 +167,8 @@ async function doStuff(e) {
 
 function smartFixLineProblem(e) {
     let editor = vscode.window.activeTextEditor
-    let { document, selection } = editor
-    let { start, end } = selection
+    let {document, selection} = editor
+    let {start, end} = selection
     let range = new vscode.Range(start, end)
 
     let diagnostics = vscode.languages.getDiagnostics(document.uri)
@@ -200,7 +200,7 @@ function resetOutputChannel() {
     }
 
     if (config.debug) {
-        outputChannel = vscode.window.createOutputChannel("Problems Fix Runner")
+        outputChannel = vscode.window.createOutputChannel('Problems Fix Runner')
     }
 }
 
