@@ -31,3 +31,7 @@
 ## 0.0.9
 
 - fix package settings name
+
+## 0.1.0
+
+- fix line problems fix not auto jumping to next problem

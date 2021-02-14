@@ -2,17 +2,17 @@
     "name": "problems-fix-runner",
     "displayName": "Problems Fix Runner",
     "description": "loop over problems in document by source and show quick fix options",
-    "version": "0.0.9",
+    "version": "0.1.0",
     "publisher": "ctf0",
     "repository": "https://github.com/ctf0/vscode-problems-fix-runner",
     "engines": {
-        "vscode": "^1.51.0"
+        "vscode": "^1.68.0"
     },
     "categories": [
         "Other"
     ],
     "activationEvents": [
-        "*"
+        "onStartupFinished"
     ],
     "main": "./src/extension.js",
     "contributes": {
@@ -23,11 +23,11 @@
             },
             {
                 "command": "pfr.next",
-                "title": "Problems Fix Runner: next"
+                "title": "Problems Fix Runner: Next"
             },
             {
                 "command": "pfr.lineProblem",
-                "title": "Problems Fix Runner: smart goto problem"
+                "title": "Problems Fix Runner: Smart Goto Problem"
             }
         ],
         "keybindings": [
@@ -41,14 +41,14 @@
                 "command": "pfr.lineProblem",
                 "key": "ctrl+.",
                 "mac": "cmd+.",
-                "when": "editorIsOpen && !editorReadonly"
+                "when": "editorFocus || editorIsOpen && !editorHasSelection && !editorReadonly"
             }
         ],
         "menus": {
             "commandPalette": [
                 {
                     "command": "pfr",
-                    "when": "editorIsOpen && !editorReadonly"
+                    "when": "editorFocus || editorIsOpen && !editorHasSelection && !editorReadonly"
                 },
                 {
                     "command": "pfr.next",
@@ -56,7 +56,7 @@
                 },
                 {
                     "command": "pfr.lineProblem",
-                    "when": "editorIsOpen && !editorReadonly"
+                    "when": "editorFocus || editorIsOpen && !editorHasSelection && !editorReadonly"
                 }
             ]
         },
@@ -83,7 +83,7 @@
                     ],
                     "description": "fix suggestion list type",
                     "enumDescriptions": [
-                        "show quickfix context menu",
+                        "show quickfix menu",
                         "show suggestion menu"
                     ]
                 },
@@ -111,15 +111,9 @@
         }
     },
     "devDependencies": {
-        "@types/glob": "^7.1.3",
-        "@types/mocha": "^8.0.4",
-        "@types/node": "^14.14.10",
-        "@types/vscode": "^1.51.0",
-        "eslint": "^7.15.0",
-        "glob": "^7.1.6",
-        "mocha": "^8.2.1",
-        "typescript": "^4.1.2",
-        "vscode-test": "^1.4.1"
+        "@types/node": "^18.11.18",
+        "@types/vscode": "^1.68.0",
+        "typescript": "^4.9.4"
     },
     "dependencies": {
         "lodash.debounce": "^4.0.8"
