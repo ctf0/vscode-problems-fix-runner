@@ -81,6 +81,9 @@ async function doStuff(e, lineDiagnostics = null) {
 
     // nothing found
     if (!diagnostics.length) {
+        running = false;
+        await setWhen(false);
+
         if (lineDiagnostics) {
             if (isASuggestionList) {
                 await runCmnd('editor.action.triggerSuggest');
@@ -90,9 +93,6 @@ async function doStuff(e, lineDiagnostics = null) {
 
             return
         }
-
-        running = false;
-        await setWhen(false);
 
         return showMsg('Nothing Found');
     }
