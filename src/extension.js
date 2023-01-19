@@ -42,7 +42,7 @@ async function activate(context) {
     context.subscriptions.push(vscode.commands.registerCommand('pfr.lineProblem', lineProblem));
 }
 
-async function doStuff(e, diagnostics = null) {
+async function doStuff(e, lineDiagnostics = null) {
     await setWhen(true);
 
     // in case of double running the cmnd
@@ -57,9 +57,11 @@ async function doStuff(e, diagnostics = null) {
     }
 
     running = true;
+
     let editor = vscode.window.activeTextEditor;
     let {document: aDocument} = editor;
-    diagnostics = diagnostics || vscode.languages.getDiagnostics(aDocument.uri);
+    let diagnostics = lineDiagnostics || vscode.languages.getDiagnostics(aDocument.uri);
+    let isASuggestionList = config.menuListType == 'suggestion';
 
     // debug
     if (config.debug) {
@@ -79,6 +81,16 @@ async function doStuff(e, diagnostics = null) {
 
     // nothing found
     if (!diagnostics.length) {
+        if (lineDiagnostics) {
+            if (isASuggestionList) {
+                await runCmnd('editor.action.triggerSuggest');
+            } else {
+                await runCmnd('editor.action.quickFix');
+            }
+
+            return
+        }
+
         running = false;
         await setWhen(false);
 
@@ -86,7 +98,6 @@ async function doStuff(e, diagnostics = null) {
     }
 
     let disposables = [];
-    let isASuggestionList = config.menuListType == 'suggestion';
 
     for (let i = 0; i < diagnostics.length; i++) {
         // stop loop

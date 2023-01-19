@@ -35,3 +35,7 @@
 ## 0.1.0
 
 - fix line problems fix not auto jumping to next problem
+
+## 0.1.1
+
+- fix not falling back to normal command if nothing found to do
