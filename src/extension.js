@@ -13,13 +13,13 @@ let outputChannel;
  * @param {vscode.ExtensionContext} context
  */
 async function activate(context) {
-    await readConfig();
+    readConfig();
     resetOutputChannel();
 
     // on config change
     vscode.workspace.onDidChangeConfiguration(async (e) => {
         if (e.affectsConfiguration(PACKAGE_NAME)) {
-            await readConfig();
+            readConfig();
 
             if (!config.debug) {
                 resetOutputChannel();
@@ -30,15 +30,15 @@ async function activate(context) {
     // on window change
     vscode.window.onDidChangeWindowState((e) => {
         if (!e.focused) {
-            stopEvent.fire();
+            stopEvent.fire(undefined);
         }
     });
 
     // on file change
-    vscode.window.onDidChangeActiveTextEditor((e) => stopEvent.fire());
+    vscode.window.onDidChangeActiveTextEditor((e) => stopEvent.fire(undefined));
 
     context.subscriptions.push(vscode.commands.registerCommand('pfr', doStuff));
-    context.subscriptions.push(vscode.commands.registerCommand('pfr.next', () => nextEvent.fire()));
+    context.subscriptions.push(vscode.commands.registerCommand('pfr.next', () => nextEvent.fire(undefined)));
     context.subscriptions.push(vscode.commands.registerCommand('pfr.lineProblem', lineProblem));
 }
 
@@ -47,13 +47,7 @@ async function doStuff(e, lineDiagnostics = null) {
 
     // in case of double running the cmnd
     if (running) {
-        return stopEvent.fire();
-    }
-
-    // clear old output
-    if (outputChannel) {
-        outputChannel.show(true);
-        outputChannel.clear();
+        return stopEvent.fire(undefined);
     }
 
     running = true;
@@ -65,6 +59,12 @@ async function doStuff(e, lineDiagnostics = null) {
 
     // debug
     if (config.debug) {
+        // clear old output
+        if (outputChannel) {
+            outputChannel.show(true);
+            outputChannel.clear();
+        }
+
         for (const info of diagnostics) {
             let {severity, source, message, code} = info;
 
@@ -91,7 +91,7 @@ async function doStuff(e, lineDiagnostics = null) {
                 await runCmnd('editor.action.quickFix');
             }
 
-            return
+            return;
         }
 
         return showMsg('Nothing Found');
@@ -124,17 +124,10 @@ async function doStuff(e, lineDiagnostics = null) {
         }
 
         await new Promise((resolve) => {
-            async function cleanUp() {
-                clearTimeout(timer);
-                await runCmnd('hideSuggestWidget');
-                disposables.forEach((e) => e.dispose());
-                resolve();
-            }
-
             // if no selection made, go next
             let timer = setTimeout(async () => {
                 if (!isASuggestionList) {
-                    stopEvent.fire();
+                    stopEvent.fire(undefined);
                 }
 
                 await cleanUp();
@@ -150,6 +143,13 @@ async function doStuff(e, lineDiagnostics = null) {
             nextEvent.event(async (e) => {
                 await cleanUp();
             });
+
+            async function cleanUp() {
+                clearTimeout(timer);
+                await runCmnd('hideSuggestWidget');
+                disposables.forEach((e) => e.dispose());
+                resolve();
+            }
 
             // go next after change
             disposables.push(
@@ -170,10 +170,11 @@ async function doStuff(e, lineDiagnostics = null) {
 
     // reached the list end
     await runCmnd('hideSuggestWidget');
-    disposables.forEach((e) => e.dispose());
-    await showMsg(running ? 'All Done' : 'Runner Stopped');
-    await setWhen(false);
     running = false;
+    disposables.forEach((e) => e.dispose());
+    await setWhen(false);
+
+    await showMsg(running ? 'All Done' : 'Runner Stopped');
 }
 
 async function lineProblem(e) {
@@ -209,8 +210,8 @@ function resetOutputChannel() {
 }
 
 /* --------------------------------- config --------------------------------- */
-async function readConfig() {
-    config = await vscode.workspace.getConfiguration(PACKAGE_NAME);
+function readConfig() {
+    config = vscode.workspace.getConfiguration(PACKAGE_NAME);
 }
 
 /* --------------------------------- utils --------------------------------- */
@@ -235,7 +236,9 @@ function showMsg(msg) {
     return vscode.window.showInformationMessage(`Problems Fix Runner: ${msg}`);
 }
 
-function deactivate() {
+async function deactivate() {
+    await setWhen(false);
+
     nextEvent.dispose();
     stopEvent.dispose();
 }
