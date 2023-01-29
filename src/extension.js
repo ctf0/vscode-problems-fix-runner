@@ -43,12 +43,17 @@ async function activate(context) {
 }
 
 async function doStuff(e, lineDiagnostics = null) {
-    await setWhen(true);
+    let timer
 
     // in case of double running the cmnd
-    if (running) {
+    if (timer) {
+        clearTimeout(timer);
+        await setWhen(false);
+        running = false;
         return stopEvent.fire(undefined);
     }
+
+    await setWhen(true);
 
     running = true;
 
@@ -83,18 +88,8 @@ async function doStuff(e, lineDiagnostics = null) {
     if (!diagnostics.length) {
         running = false;
         await setWhen(false);
-
-        if (lineDiagnostics) {
-            if (isASuggestionList) {
-                await runCmnd('editor.action.triggerSuggest');
-            } else {
-                await runCmnd('editor.action.quickFix');
-            }
-
-            return;
-        }
-
-        return showMsg('Nothing Found');
+        await runCmnd(config.defaultCommand); // default system "cmd+." action
+        return;
     }
 
     let disposables = [];
@@ -120,12 +115,12 @@ async function doStuff(e, lineDiagnostics = null) {
 
             await runCmnd('editor.action.triggerSuggest');
         } else {
-            await runCmnd('editor.action.quickFix');
+            await runCmnd(config.defaultCommand);
         }
 
         await new Promise((resolve) => {
             // if no selection made, go next
-            let timer = setTimeout(async () => {
+            timer = setTimeout(async () => {
                 if (!isASuggestionList) {
                     stopEvent.fire(undefined);
                 }
@@ -144,13 +139,6 @@ async function doStuff(e, lineDiagnostics = null) {
                 await cleanUp();
             });
 
-            async function cleanUp() {
-                clearTimeout(timer);
-                await runCmnd('hideSuggestWidget');
-                disposables.forEach((e) => e.dispose());
-                resolve();
-            }
-
             // go next after change
             disposables.push(
                 vscode.workspace.onDidChangeTextDocument(
@@ -165,16 +153,24 @@ async function doStuff(e, lineDiagnostics = null) {
                     }, 50),
                 ),
             );
+
+            async function cleanUp() {
+                clearTimeout(timer);
+                await runCmnd('hideSuggestWidget');
+                await runCmnd('hideCodeActionWidget');
+                disposables.forEach((e) => e.dispose());
+
+                return resolve();
+            }
         });
     }
 
     // reached the list end
     await runCmnd('hideSuggestWidget');
+    await runCmnd('hideCodeActionWidget');
+    await setWhen(false);
     running = false;
     disposables.forEach((e) => e.dispose());
-    await setWhen(false);
-
-    await showMsg(running ? 'All Done' : 'Runner Stopped');
 }
 
 async function lineProblem(e) {
@@ -187,7 +183,7 @@ async function lineProblem(e) {
     if (diagnostics.length) {
         await doStuff(null, diagnostics);
     } else {
-        await runCmnd('editor.action.quickFix');
+        await runCmnd(config.defaultCommand);
     }
 }
 
@@ -225,8 +221,8 @@ async function setWhen(val) {
 
 function sortSelections(arr) {
     return arr.sort((a, b) => { // make sure its sorted correctly
-        if (a.range.start.line > b.range.start.line) return 1;
-        if (b.range.start.line > a.range.start.line) return -1;
+        if (a.range.start.line > b.range.start.line && a.range.start.character > b.range.start.character) return 1;
+        if (b.range.start.line > a.range.start.line && b.range.start.character > a.range.start.character) return -1;
 
         return 0;
     });
@@ -236,8 +232,8 @@ function showMsg(msg) {
     return vscode.window.showInformationMessage(`Problems Fix Runner: ${msg}`);
 }
 
-async function deactivate() {
-    await setWhen(false);
+function deactivate() {
+    setWhen(false);
 
     nextEvent.dispose();
     stopEvent.dispose();

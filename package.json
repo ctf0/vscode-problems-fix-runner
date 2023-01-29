@@ -2,7 +2,7 @@
     "name": "problems-fix-runner",
     "displayName": "Problems Fix Runner",
     "description": "loop over problems in document by source and show quick fix options",
-    "version": "0.1.3",
+    "version": "0.1.4",
     "publisher": "ctf0",
     "repository": "https://github.com/ctf0/vscode-problems-fix-runner",
     "engines": {
@@ -33,22 +33,22 @@
         "keybindings": [
             {
                 "command": "pfr.next",
-                "key": "escape",
-                "mac": "escape",
+                "key": "ctrl+escape",
+                "mac": "cmd+escape",
                 "when": "pfrIsRunning"
             },
             {
                 "command": "pfr.lineProblem",
                 "key": "ctrl+.",
                 "mac": "cmd+.",
-                "when": "editorFocus || editorIsOpen && !editorHasSelection && !editorReadonly"
+                "when": "editorFocus && editorIsOpen && !editorHasSelection && !editorReadonly"
             }
         ],
         "menus": {
             "commandPalette": [
                 {
                     "command": "pfr",
-                    "when": "editorFocus || editorIsOpen && !editorHasSelection && !editorReadonly"
+                    "when": "editorFocus && editorIsOpen && !editorHasSelection && !editorReadonly"
                 },
                 {
                     "command": "pfr.next",
@@ -56,7 +56,7 @@
                 },
                 {
                     "command": "pfr.lineProblem",
-                    "when": "editorFocus || editorIsOpen && !editorHasSelection && !editorReadonly"
+                    "when": "editorFocus && editorIsOpen && !editorHasSelection && !editorReadonly"
                 }
             ]
         },
@@ -104,8 +104,13 @@
                 },
                 "problemsFixRunner.waitFor": {
                     "type": "number",
-                    "default": 10,
-                    "markdownDescription": "time in seconds b4 stop (`#problemsFixRunner.menuListType#` == `quickfix`) or going to next problem (`#problemsFixRunner.menuListType#` == `suggestion`) if no suggestion was made"
+                    "default": 5,
+                    "markdownDescription": "time in seconds before stop if (`#problemsFixRunner.menuListType#` == `quickfix`)\n\nor going to next problem when no suggestion was made if (`#problemsFixRunner.menuListType#` == `suggestion`)"
+                },
+                "problemsFixRunner.defaultCommand": {
+                    "type": "string",
+                    "default": "editor.action.quickFix",
+                    "markdownDescription": "what command to fall back to when there is nothing to do"
                 }
             }
         }

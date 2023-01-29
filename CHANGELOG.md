@@ -39,3 +39,8 @@
 ## 0.1.1
 
 - fix not falling back to normal command if nothing found to do
+
+## 0.1.4
+
+- more fixes
+- changed `pfr.next` shortcut to `cmd+escape` & `ctrl+escape` to avoid interference with system shortcuts which cant be overridden
