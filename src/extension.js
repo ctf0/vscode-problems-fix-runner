@@ -16,40 +16,41 @@ async function activate(context) {
     readConfig();
     resetOutputChannel();
 
-    // on config change
-    vscode.workspace.onDidChangeConfiguration(async (e) => {
-        if (e.affectsConfiguration(PACKAGE_NAME)) {
-            readConfig();
+    context.subscriptions.push(
+        // on config change
+        vscode.workspace.onDidChangeConfiguration(async (e) => {
+            if (e.affectsConfiguration(PACKAGE_NAME)) {
+                readConfig();
 
-            if (!config.debug) {
-                resetOutputChannel();
+                if (!config.debug) {
+                    resetOutputChannel();
+                }
             }
-        }
-    });
-
-    // on window change
-    vscode.window.onDidChangeWindowState((e) => {
-        if (!e.focused) {
-            stopEvent.fire(undefined);
-        }
-    });
-
-    // on file change
-    vscode.window.onDidChangeActiveTextEditor((e) => stopEvent.fire(undefined));
-
-    context.subscriptions.push(vscode.commands.registerCommand('pfr', doStuff));
-    context.subscriptions.push(vscode.commands.registerCommand('pfr.next', () => nextEvent.fire(undefined)));
-    context.subscriptions.push(vscode.commands.registerCommand('pfr.lineProblem', lineProblem));
+        }),
+        // on window change
+        vscode.window.onDidChangeWindowState((e) => {
+            if (!e.focused) {
+                stopEvent.fire(undefined);
+            }
+        }),
+        // on file change
+        vscode.window.onDidChangeActiveTextEditor((e) => stopEvent.fire(undefined)),
+        // commands
+        vscode.commands.registerCommand('pfr', doStuff),
+        vscode.commands.registerCommand('pfr.next', () => nextEvent.fire(undefined)),
+        vscode.commands.registerCommand('pfr.lineProblem', lineProblem),
+    );
 }
 
 async function doStuff(e, lineDiagnostics = null) {
-    let timer
+    let timer;
 
     // in case of double running the cmnd
     if (timer) {
         clearTimeout(timer);
         await setWhen(false);
         running = false;
+
         return stopEvent.fire(undefined);
     }
 
@@ -89,6 +90,7 @@ async function doStuff(e, lineDiagnostics = null) {
         running = false;
         await setWhen(false);
         await runCmnd(config.defaultCommand); // default system "cmd+." action
+
         return;
     }
 
