@@ -177,9 +177,9 @@ async function doStuff(e, lineDiagnostics = null) {
 
 async function lineProblem(e) {
     let editor = vscode.window.activeTextEditor;
-    let {document: aDocument, selection} = editor;
+    let {document, selection} = editor;
 
-    let diagnostics = vscode.languages.getDiagnostics(aDocument.uri)
+    let diagnostics = vscode.languages.getDiagnostics(document.uri)
         .filter((item) => item.range.start.line == selection.start.line);
 
     if (diagnostics.length) {
@@ -224,14 +224,11 @@ async function setWhen(val) {
 function sortSelections(arr) {
     return arr.sort((a, b) => { // make sure its sorted correctly
         if (a.range.start.line > b.range.start.line && a.range.start.character > b.range.start.character) return 1;
+
         if (b.range.start.line > a.range.start.line && b.range.start.character > a.range.start.character) return -1;
 
         return 0;
     });
-}
-
-function showMsg(msg) {
-    return vscode.window.showInformationMessage(`Problems Fix Runner: ${msg}`);
 }
 
 function deactivate() {

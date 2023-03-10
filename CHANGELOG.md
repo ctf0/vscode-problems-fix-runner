@@ -44,3 +44,7 @@
 
 - more fixes
 - changed `pfr.next` shortcut to `cmd+escape` & `ctrl+escape` to avoid interference with system shortcuts which cant be overridden
+
+## 0.1.6
+
+- dont run `pfr.lineProblem` if we have a code action results at the current cursor position

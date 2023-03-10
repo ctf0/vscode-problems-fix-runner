@@ -2,7 +2,7 @@
     "name": "problems-fix-runner",
     "displayName": "Problems Fix Runner",
     "description": "loop over problems in document by source and show quick fix options",
-    "version": "0.1.5",
+    "version": "0.1.6",
     "publisher": "ctf0",
     "repository": "https://github.com/ctf0/vscode-problems-fix-runner",
     "engines": {
@@ -41,14 +41,14 @@
                 "command": "pfr.lineProblem",
                 "key": "ctrl+.",
                 "mac": "cmd+.",
-                "when": "editorFocus && editorIsOpen && !editorHasSelection && !editorReadonly"
+                "when": "editorFocus && !editorHasSelection && !editorReadonly && !editorHasCodeActionsProvider"
             }
         ],
         "menus": {
             "commandPalette": [
                 {
                     "command": "pfr",
-                    "when": "editorFocus && editorIsOpen && !editorHasSelection && !editorReadonly"
+                    "when": "editorFocus && !editorHasSelection && !editorReadonly"
                 },
                 {
                     "command": "pfr.next",
@@ -56,7 +56,7 @@
                 },
                 {
                     "command": "pfr.lineProblem",
-                    "when": "editorFocus && editorIsOpen && !editorHasSelection && !editorReadonly"
+                    "when": "editorFocus && !editorHasSelection && !editorReadonly"
                 }
             ]
         },
