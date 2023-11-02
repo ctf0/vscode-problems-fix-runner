@@ -16,3 +16,6 @@ no more no less 💥
     - if window loses focus
     - if no selection was made (if `menuListType == quickfix`)
     - if command re-executed
+
+## PS
+for the `pfr.lineProblem` command, vscode now support this natively https://code.visualstudio.com/updates/v1_84#_nearest-quick-fix-keyboard-shortcut
